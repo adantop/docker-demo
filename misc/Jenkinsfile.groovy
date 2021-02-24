@@ -27,9 +27,11 @@ node {
      }                                   
      mysql.stop()
    } */                                   
-   stage('docker build/push') {            
-      docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-         def app = docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
+   stage('docker build/push') {
+      docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
+         docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+            def app = docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
+         }
       }                                     
    }                                       
 }                                          
