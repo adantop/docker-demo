@@ -6,7 +6,7 @@ node {
       commit_id = readFile('.git/commit-id').trim()
    }
    stage('test') {
-      docker.withRegistry("", "dockerhub") {  
+      docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {  
          def myTestContainer = docker.image('node:4.6')        
          myTestContainer.pull()
          myTestContainer.inside {
