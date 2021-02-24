@@ -3,6 +3,8 @@ node {
    
    docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
       docker.withRegistry('', 'dockerhub') {
+         
+         
          stage('setup') {
             checkout scm
             sh 'git rev-parse --short HEAD > .git/commit-id'
@@ -25,15 +27,10 @@ node {
                }
             }
          }
-      }
-   }
-   
-   /*
-   stage('docker build/push') {
-      docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
-         docker.withRegistry('', 'dockerhub') {
-            def app = docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
+         
+         stage('docker build/push') {
+            docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
          }
       }
-   }*/
+   }
 }
