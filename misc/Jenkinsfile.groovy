@@ -10,12 +10,10 @@ node {
    stage('unit-test') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-            docker.image('node:4.6').withRun {c ->
-               
-               c.inside {
-                  sh 'npm install --only=dev'
-                  sh 'npm test'
-               }
+            
+            docker.image('node:4.6').inside {
+               sh 'npm install --only=dev'
+               sh 'npm test'
             }
          }
       }
