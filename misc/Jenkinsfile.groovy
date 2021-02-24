@@ -11,9 +11,10 @@ node {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
             docker.image('node:4.6').withRun { c -> {
-               sh 'node --version'
-               sh 'npm install --only=dev'
-               sh 'npm test'
+                  sh 'node --version'
+                  sh 'npm install --only=dev'
+                  sh 'npm test'
+               }
             }
          }
       }
