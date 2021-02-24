@@ -1,6 +1,5 @@
 node {
    def commit_id
-   def remote_docker = 'tcp://192.168.0.146:2376'
    
    stage('setup') {
       checkout scm
@@ -9,7 +8,7 @@ node {
    }
    
    stage('test') {
-      docker.withServer(commit_id, 'localDocker') {
+      docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          def myTestContainer = docker.image('node:4.6')
          myTestContainer.pull()
          myTestContainer.inside {
