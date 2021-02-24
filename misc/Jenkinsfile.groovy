@@ -7,11 +7,10 @@ node {
       commit_id = readFile('.git/commit-id').trim()
    }
    
-   stage('test') {
+   stage('unit-test') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
             docker.image('node:4.6').withRun {c ->
-               sh 'node --version'
                sh 'npm install --only=dev'
                sh 'npm test'
             }
@@ -19,7 +18,7 @@ node {
       }
    }
    
-   stage('test with a DB') {
+   stage('integration-test') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
             def mysql = docker.image('mysql').run("-e MYSQL_ALLOW_EMPTY_PASSWORD=yes") 
