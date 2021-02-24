@@ -9,7 +9,7 @@ node {
    
    stage('unit-test') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
-         docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+         docker.withRegistry('', 'dockerhub') {
             
             docker.image('node:4.6').inside {
                sh 'npm install --only=dev'
@@ -21,24 +21,25 @@ node {
    
    stage('integration-test') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
-         docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-            def mysql = docker.image('mysql').run("-e MYSQL_ALLOW_EMPTY_PASSWORD=yes") 
-            def myTestContainer = docker.image('node:4.6')
-            myTestContainer.pull()
-            myTestContainer.inside("--link ${mysql.id}:mysql") { // using linking, mysql will be available at host: mysql, port: 3306
-                sh 'npm install --only=dev' 
-                sh 'npm test'                     
-            }                                   
-            mysql.stop()
+         docker.withRegistry('', 'dockerhub') {
+            
+            docker.image('mysql').withRun("-e MYSQL_ALLOW_EMPTY_PASSWORD=yes") { mysql ->
+               // using linking, mysql will be available at host: mysql, port: 3306
+               docker.image('node:4.6').inside("--link ${mysql.id}:mysql") {
+                   sh 'npm install --only=dev' 
+                   sh 'npm test'                     
+               }
+            }
          }
       }
    }
    
+   /*
    stage('docker build/push') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
-         docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+         docker.withRegistry('', 'dockerhub') {
             def app = docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
          }
       }
-   }
+   }*/
 }
