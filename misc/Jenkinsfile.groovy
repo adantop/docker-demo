@@ -32,6 +32,7 @@ node {
             }                                   
             mysql.stop()
          }
+      }
    }
    stage('docker build/push') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
