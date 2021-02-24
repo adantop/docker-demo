@@ -6,7 +6,7 @@ node {
       commit_id = readFile('.git/commit-id').trim()
    }
    stage('test') {
-      docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+      docker.withRegistry('https://registry-1.docker.io/v2', 'dockerhub') {
          def myTestContainer = docker.image('node:4.6')        
          myTestContainer.pull()
          myTestContainer.inside {
