@@ -1,19 +1,20 @@
 node {
    def commit_id
-   stage('Preparation') {
+   def remote_docker = 'tcp://192.168.0.146:2376'
+   
+   stage('setup') {
       checkout scm
-      sh "git rev-parse --short HEAD > .git/commit-id"
+      sh 'git rev-parse --short HEAD > .git/commit-id'
       commit_id = readFile('.git/commit-id').trim()
    }
+   
    stage('test') {
-      docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
-         docker.withRegistry("", 'dockerhub') {
-            def myTestContainer = docker.image('node:4.6')        
-            myTestContainer.pull()
-            myTestContainer.inside {
-               sh 'npm install --only=dev'
-               sh 'npm test'
-            }
+      docker.withServer(commit_id, 'localDocker') {
+         def myTestContainer = docker.image('node:4.6')
+         myTestContainer.pull()
+         myTestContainer.inside {
+            sh 'npm install --only=dev'
+            sh 'npm test'
          }
       }
    }
@@ -26,12 +27,12 @@ node {
           sh 'npm test'                     
      }                                   
      mysql.stop()
-   } */                                   
+   } */
    stage('docker build/push') {
       docker.withServer('tcp://192.168.0.146:2376', 'localDocker') {
          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
             def app = docker.build("adantop/docker-nodejs-demo:${commit_id}", '.').push()
          }
-      }                                     
-   }                                       
-}                                          
+      }
+   }
+}
